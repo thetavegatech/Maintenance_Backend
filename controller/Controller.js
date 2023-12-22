@@ -120,6 +120,7 @@ const updateRecords =  async (req, res) => {
         const filter = { _id: updatedAsset._id };
         const update = {
           nextDate: updatedAsset.nextDate,
+          status: updatedAsset.status,
           // Add other fields to update here if needed
         };
   

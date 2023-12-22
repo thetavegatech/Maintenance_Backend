@@ -10,7 +10,7 @@ router.get('/getAllData',getAllData);
 router.get('/getId/:id',getId);
 router.put('/updateRecord/:id',updateRecord);
 router.delete('/deleteRecord/:id',deleteRecord);
-router.post('/updateRecords',updateRecords);
+router.put('/updateRecords',updateRecords);
 router.get('/getMachines/:AssetName', getMachines);
 
 // router.post('/saveBreakDown', saveBreakdown);

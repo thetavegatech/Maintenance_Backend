@@ -33,7 +33,7 @@ const BreakDownSchema = new Schema({
         type: String,
         require: true
     }, 
-    StageName: {
+    Operations: {
         type:String,
         require: true
     },
@@ -45,7 +45,7 @@ const BreakDownSchema = new Schema({
             type:String,
             require: true
         },
-        OCC: {
+        DetectOCC: {
             type:String,
             require: true
         },
@@ -53,15 +53,28 @@ const BreakDownSchema = new Schema({
             type:String,
             require: true
         },
-        WhyWhyAnalysis: {
-            type:String,
-            require: true
-        },
+        // WhyWhyAnalysis: {
+        //     type:String,
+        //     require: true
+        // },
+        WhyWhyAnalysis: { type: [String], default: [] },
         RootCause: {
             type:String,
             require: true
         },
-        PermanentAction: {
+        PreventiveAction: {
+            type:String,
+            require: true
+        },
+        CorrectiveAction: {
+            type:String,
+            require: true
+        },
+        SpareParts: {
+            type:String,
+            require: true
+        },
+        Cost: {
             type:String,
             require: true
         },
