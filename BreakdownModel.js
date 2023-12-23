@@ -57,7 +57,7 @@ const BreakDownSchema = new Schema({
         //     type:String,
         //     require: true
         // },
-        WhyWhyAnalysis: { type: [String], default: [] },
+        WhyWhyAnalysis: { type:String},
         RootCause: {
             type:String,
             require: true

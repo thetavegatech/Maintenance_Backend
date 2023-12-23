@@ -139,6 +139,10 @@ const AssetSchema = new Schema({
             type:String,
             reruire: true
         },
+        Image: {
+            type: String,
+            require: true      
+        },
         TaskDescription :{
             type:String,
             reruire: true

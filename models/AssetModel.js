@@ -54,6 +54,14 @@ const AssetSchema = new Schema({
         type: String,
        
     },
+    ManufacturingYear: {
+        type: String,
+       
+    },
+    Image: {
+        type: String,
+        require: true      
+    },
         status :{
             type:String,
             reruire: true
