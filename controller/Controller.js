@@ -134,6 +134,7 @@ const updateRecords =  async (req, res) => {
       res.status(500).json({ error: 'Error updating records' });
     }
   };
+  
 
 // app.delete('/asset/:id', async (req, res) => {
   const deleteRecord = async (req, res) => {
