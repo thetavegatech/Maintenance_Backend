@@ -1,9 +1,32 @@
 
 const express = require('express');
 const router = express()
+const multer = require('multer');
 
 const { saveAsset, getAllData , getId, updateRecord, deleteRecord,updateRecords, getMachines} = require('../controller/Controller'); // Assuming the controller file is named `Controller.js` and is in a directory called `controller`
 // const {saveBreakDown, saveBreakdown }= require('../controller/BreakdownController');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+              const dirName =path.join(process.cwd(), './files/')
+              console.log(dirName)
+              if (!fs.existsSync(dirName)){
+                      fs.mkdirSync(dirName);
+              }
+                  cb(null,dirName)
+          },
+    // },
+    filename: (req, file, cb)  => {
+          cb(null, Date.now()+'-'+file.originalname)
+    }
+  
+  
+    })
+  const upload = multer({ storage: storage });
+  router.put('/updateRecord/:id',upload.single('files'), (req, res) => {
+    console.log(reqs.file.destination) // image url
+    console.log(JSON.parse(req.body)) // other things
+  })
 
 router.post('/saveAsset', saveAsset);
 router.get('/getAllData',getAllData);

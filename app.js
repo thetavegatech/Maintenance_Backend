@@ -9,24 +9,30 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json());
+// Express 3.0
+//app.use(express.json({ limit: '10mb' }));
+// app.use(express.urlencoded({ limit: '10mb' }));
 
 app.use(cors());
-app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser())
 // Increase payload size limit to 50MB (adjust as needed)
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 
 const router = require('./Routes/Router');
 const Breakdownrouter = require('./Routes/BreakdownRouter');
-const UserNo = require('./NumberModel');
-const routerNo = require('./controller/userNoContoller');
+// const UserNo = require('./NumberModel');
+// const routerNo = require('./controller/userNoContoller');
 const Asset = require('./Model');
 const BreakDown = require('./BreakdownModel');
 const AssetMaster = require('./models/AssetModel');
 const AssetRouter = require('./Routes/AssetRoute')
-
+const UserInfo = require('./models/userInfoModel');
+const routerNo = require('./controller/userInfoController');
 
 // const mongourl = "mongodb://192.168.29.93:27017/MMS_DB?directConnection=true"
 const mongourl = "mongodb+srv://vaibhavdevkar101:Vaibhav123@cluster0.518nyqj.mongodb.net/MMS_DB?retryWrites=true&w=majority"
@@ -68,18 +74,39 @@ app.get('/getBreakdownData', async (req, res) => {
   });
 
 
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'attachments/');
+//   },
+//   filename: (req, file, cb) => {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//     cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
+//   },
+// });
+
+// const upload = multer({ storage: storage });
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'attachments/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
-  },
-});
+            var dirName =path.join(process.cwd(), './files/')
+            console.log(dirName)
+            if (!fs.existsSync(dirName)){
+                    fs.mkdirSync(dirName);
+            }
+                cb(null,dirName)
+        },
+  // },
+  filename: (req, file, cb)  => {
+        cb(null, Date.now()+'-'+file.originalname)
+  }
 
+
+  })
 const upload = multer({ storage: storage });
-
+router.post("/putData",upload.single('files'), (req, res) => {
+  console.log(reqs.file.destination) // image url
+  console.log(JSON.parse(req.body)) // other things
+})
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000")

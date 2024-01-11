@@ -1,12 +1,12 @@
 const express = require('express');
 const routerNo = express.Router();
-const UserNo = require('../NumberModel');
+const UserInfo = require('../models/userInfoModel');
 
 // Create a new user
-routerNo.post('/UserNo', async (req, res) => {
+routerNo.post('/UserInfo', async (req, res) => {
   try {
     const { name, phoneNumber, address, email, Location, plant } = req.body;
-    const newUserNo = new UserNo({ name, phoneNumber, address, email, Location, plant });
+    const newUserNo = new UserInfo({ name, phoneNumber, address, email, Location, plant });
     const userno = await newUserNo.save();
     res.json(userno);
   } catch (error) {
@@ -16,9 +16,9 @@ routerNo.post('/UserNo', async (req, res) => {
 });
 
 // Get a list of all users
-routerNo.get('/UserNo', async (req, res) => {
+routerNo.get('/UserInfo', async (req, res) => {
   try {
-    const usernos = await UserNo.find();
+    const usernos = await UserInfo.find();
     res.json(usernos);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching users' });
@@ -26,9 +26,9 @@ routerNo.get('/UserNo', async (req, res) => {
 });
 
   // Get user by ID
-  routerNo.get('/UserNo/:userId', async (req, res) => {
+  routerNo.get('/UserInfo/:userId', async (req, res) => {
     try {
-      const userno = await UserNo.findById(req.params.userId);
+      const userno = await UserInfo.findById(req.params.userId);
       if (!userno) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -39,9 +39,9 @@ routerNo.get('/UserNo', async (req, res) => {
   });
 
   // Update user by ID
-  routerNo.put('/UserNo/:userId', async (req, res) => {
+  routerNo.put('/UserInfo/:userId', async (req, res) => {
     try {
-      const userno = await UserNo.findByIdAndUpdate(req.params.userId, req.body, { new: true });
+      const userno = await UserInfo.findByIdAndUpdate(req.params.userId, req.body, { new: true });
       if (!userno) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -52,9 +52,9 @@ routerNo.get('/UserNo', async (req, res) => {
   });
 
 // Delete user by ID
-routerNo.delete('/UserNo/:userId', async (req, res) => {
+routerNo.delete('/UserInfo/:userId', async (req, res) => {
   try {
-    const userno = await UserNo.findByIdAndRemove(req.params.userId);
+    const userno = await UserInfo.findByIdAndRemove(req.params.userId);
     if (!userno) {
       return res.status(404).json({ error: 'User not found' });
     }
