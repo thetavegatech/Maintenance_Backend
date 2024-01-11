@@ -140,8 +140,8 @@ const AssetSchema = new Schema({
             reruire: true
         },
         Image: {
-            type: String,
-            require: true      
+            data: Buffer,
+            contentType: String 
         },
         TaskDescription :{
             type:String,
