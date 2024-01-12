@@ -19,4 +19,7 @@ router.put('/assets/:id', assetController.updateAssetById);
 // Delete asset by ID
 router.delete('/assets/:id', assetController.deleteAssetById);
 
+// Get all unique locations of assets
+router.get('/locations', assetController.getAllLocations);
+
 module.exports = router;

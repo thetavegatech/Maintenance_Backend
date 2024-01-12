@@ -9,31 +9,19 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 
-// app.use(bodyParser.json({ limit: '50mb' }));
-// app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.json());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-
-// Express 3.0
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb' }));
-
-// Express 3.0
-//app.use(express.json({ limit: '10mb' }));
-// app.use(express.urlencoded({ limit: '10mb' }));
+app.use(express.json());
 
 app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser())
-// Increase payload size limit to 50MB (adjust as needed)
 
 
 const router = require('./Routes/Router');
 const Breakdownrouter = require('./Routes/BreakdownRouter');
-// const UserNo = require('./NumberModel');
-// const routerNo = require('./controller/userNoContoller');
+const UserNo = require('./NumberModel');
 const Asset = require('./Model');
 const BreakDown = require('./BreakdownModel');
 const AssetMaster = require('./models/AssetModel');
@@ -46,12 +34,11 @@ const mongourl = "mongodb+srv://vaibhavdevkar101:Vaibhav123@cluster0.518nyqj.mon
 
 
 mongoose.connect(mongourl, {
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true
 })
   .then(() => { console.log("connected to database"); })
   .catch(e => console.log(e));
 
+  
 //userauth
 const userRoute = require("./Routes/userRoutes")
 const {notFound , errorHandler} = require("./middleware/errorMiddleware")
@@ -59,8 +46,6 @@ const AssetRoutes = require('./Routes/AssetRoute');
 
 
 app.use("/api/users", userRoute)
-// app.use(notFound)
-// app.use(errorHandler)
 
 //this routes for breakdown
 app.use(router);
@@ -80,27 +65,25 @@ app.get('/getBreakdownData', async (req, res) => {
     }
   });
 
+
+  // Set up Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-            var dirName =path.join(process.cwd(), './files/')
-            console.log(dirName)
-            if (!fs.existsSync(dirName)){
-                    fs.mkdirSync(dirName);
-            }
-                cb(null,dirName)
-        },
-  // },
-  filename: (req, file, cb)  => {
-        cb(null, Date.now()+'-'+file.originalname)
-  }
+    cb(null, 'backend/uploads'); // Destination folder
+  },
+  filename: (req, file, cb) => {
+    const fileName = `${Date.now()}-${file.originalname}`;
+    cb(null, fileName);
+  },
+});
 
+const upload = multer({ storage });
 
-  })
-const upload = multer({ storage: storage });
-router.post("/putData",upload.single('files'), (req, res) => {
-  console.log(reqs.file.destination) // image url
-  console.log(JSON.parse(req.body)) // other things
-})
+// Define the file upload endpoint
+app.post('/upload', upload.single('file'), (req, res) => {
+  res.json({ message: 'File uploaded successfully!' });
+});
+
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000")

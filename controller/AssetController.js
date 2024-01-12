@@ -69,3 +69,14 @@ exports.deleteAssetById = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+// Get all assets with distinct locations
+exports.getAllLocations = async (req, res) => {
+  try {
+    const locations = await AssetMaster.distinct('location');
+    res.status(200).json(locations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
