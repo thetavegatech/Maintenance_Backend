@@ -8,6 +8,7 @@ const cookieparser = require("cookie-parser")
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const Grid = require('gridfs-stream');
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -66,23 +67,68 @@ app.get('/getBreakdownData', async (req, res) => {
   });
 
 
-  // Set up Multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'backend/uploads'); // Destination folder
-  },
-  filename: (req, file, cb) => {
-    const fileName = `${Date.now()}-${file.originalname}`;
-    cb(null, fileName);
-  },
+  // Initialize GridFS
+let gfs;
+mongoose.connection.once('open', () => {
+  gfs = Grid(mongoose.connection.db, mongoose.mongo);
+  gfs.collection('uploads');
 });
 
+// Set up Multer for file uploads
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Define the file upload endpoint
-app.post('/upload', upload.single('file'), (req, res) => {
-  res.json({ message: 'File uploaded successfully!' });
+  
+// Route to handle image uploads
+app.post('/upload', upload.single('image'), (req, res) => {
+  // Access the uploaded file using req.file.buffer
+  const { originalname, buffer } = req.file;
+
+  // Create a write stream to store the file in MongoDB GridFS
+  const writestream = gfs.createWriteStream({
+    filename: originalname,
+  });
+  // Pipe the file buffer to GridFS
+  writestream.write(buffer);
+  writestream.end();
+
+  writestream.on('close', () => {
+    res.send('File uploaded successfully');
+  });
 });
+
+// Define the file upload endpoint
+// app.post('/upload', upload.single('file'), (req, res) => {
+//   res.json({ message: 'File uploaded successfully!' });
+// });
+
+// app.post('/upload', upload.single('file'), (req, res) => {
+//   try {
+//     // Assuming 'file' is the name attribute of the file input in your HTML form
+//     const uploadedFile = req.file;
+
+//     if (!uploadedFile) {
+//       throw new Error('No file provided');
+//     }
+
+//     // Get the destination path (Multer has already configured the destination in your case)
+//     const destinationPath = uploadedFile.destination;
+
+//     // You can perform additional processing here if needed
+
+//     // Move the file to a desired location (e.g., the 'backend/uploads' folder)
+//     const newFilePath = path.join(destinationPath, uploadedFile.filename);
+//     fs.renameSync(uploadedFile.path, newFilePath);
+
+//     // Send a success response
+//     res.json({ message: 'File uploaded successfully!' });
+//   } catch (error) {
+//     console.error(error);
+
+//     // Send an error response
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
 
 
 app.listen(5000, () => {
