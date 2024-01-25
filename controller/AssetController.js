@@ -80,3 +80,38 @@ exports.getAllLocations = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+// Get location by asset name
+// exports.getLocationByAssetName = async (req, res) => {
+//   try {
+//     const AssetName = req.params.AssetName;
+//     const asset = await AssetMaster.findOne({ AssetName });
+
+//     if (!asset) {
+//       return res.status(404).json({ error: `Asset with name '${AssetName}' not found` });
+//     }
+
+//     const Location = asset.Location;
+//     res.status(200).json({ AssetName, Location });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// };
+
+exports.getLocationByAssetName = async (req, res) => {
+  try {
+    const assets = await AssetMaster.find({}, { AssetName: 1, Location: 1, _id: 0 });
+
+    if (!assets || assets.length === 0) {
+      return res.status(404).json({ error: 'No assets found' });
+    }
+
+    const assetNamesAndLocations = assets.map(({ AssetName, Location }) => ({ AssetName, Location }));
+
+    res.status(200).json(assetNamesAndLocations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

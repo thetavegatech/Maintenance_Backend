@@ -74,33 +74,30 @@ mongoose.connection.once('open', () => {
   gfs.collection('uploads');
 });
 
-// Set up Multer for file uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage });
 
   
-// Route to handle image uploads
-app.post('/upload', upload.single('image'), (req, res) => {
-  // Access the uploaded file using req.file.buffer
-  const { originalname, buffer } = req.file;
 
-  // Create a write stream to store the file in MongoDB GridFS
-  const writestream = gfs.createWriteStream({
-    filename: originalname,
-  });
-  // Pipe the file buffer to GridFS
-  writestream.write(buffer);
-  writestream.end();
+// app.post('/upload', upload.single('image'), (req, res) => {
+//   // Access the uploaded file using req.file.buffer
+//   const { originalname, buffer } = req.file;
 
-  writestream.on('close', () => {
-    res.send('File uploaded successfully');
-  });
-});
+//   // Create a write stream to store the file in MongoDB GridFS
+//   const writestream = gfs.createWriteStream({
+//     filename: originalname,
+//   });
+//   // Pipe the file buffer to GridFS
+//   writestream.write(buffer);
+//   writestream.end();
 
-// Define the file upload endpoint
-// app.post('/upload', upload.single('file'), (req, res) => {
-//   res.json({ message: 'File uploaded successfully!' });
+//   writestream.on('close', () => {
+//     res.send('File uploaded successfully');
+//   });
 // });
+
+
 
 // app.post('/upload', upload.single('file'), (req, res) => {
 //   try {
@@ -130,6 +127,23 @@ app.post('/upload', upload.single('image'), (req, res) => {
 //   }
 // });
 
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'D:\Work\Bootstrap\images'); // Set the path to your source folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Route for file upload
+app.post('/upload', upload.single('image'), (req, res) => {
+  // File uploaded successfully
+  res.send('File uploaded');
+});
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000")
