@@ -133,6 +133,18 @@ exports.updateMaintenanceSetById = async (req, res) => {
 //     }
 
 //     res.status(200).json(maintenanceSet);
+// Get location by asset name
+// exports.getLocationByAssetName = async (req, res) => {
+//   try {
+//     const AssetName = req.params.AssetName;
+//     const asset = await AssetMaster.findOne({ AssetName });
+
+//     if (!asset) {
+//       return res.status(404).json({ error: `Asset with name '${AssetName}' not found` });
+//     }
+
+//     const Location = asset.Location;
+//     res.status(200).json({ AssetName, Location });
 //   } catch (error) {
 //     console.error(error);
 //     res.status(500).json({ error: 'Internal Server Error' });
