@@ -2,14 +2,14 @@ const BreakDown= require('../BreakdownModel');
 
 const saveBreakdown = async (req, res) => {
     const {  MachineName,BreakdownStartDate,BreakdownEndDate,BreakdownStartTime,BreakdownEndTime,Shift,LineName,Operations,BreakdownPhenomenons,BreakdownType,OCC
-        ,ActionTaken, WhyWhyAnalysis,RootCause,PreventiveAction,CorrectiveAction,whyWhyAnalysisList,TargetDate,Responsibility,HD,Remark,Status,Location,SpareParts,Cost
+        ,ActionTaken, Date,AttendedBy, WhyWhyAnalysis,RootCause,PreventiveAction,CorrectiveAction,whyWhyAnalysisList,TargetDate,Responsibility,HD,Remark,Status,Location,SpareParts,Cost
         } = req.body;
  
     try {
         const newBreakdown = new BreakDown({
            
             MachineName,BreakdownStartDate,BreakdownEndDate,BreakdownStartTime,BreakdownEndTime,Shift,LineName,Operations,BreakdownPhenomenons,
-            BreakdownType,OCC,ActionTaken, WhyWhyAnalysis,RootCause,PreventiveAction,whyWhyAnalysisList,CorrectiveAction,TargetDate,Responsibility,
+            BreakdownType,OCC,ActionTaken,Date, AttendedBy, WhyWhyAnalysis,RootCause,PreventiveAction,whyWhyAnalysisList,CorrectiveAction,TargetDate,Responsibility,
             SpareParts,HD,Remark,Status, Location,Cost
             // attachment: 'attachments/' + req.file.filename,
 

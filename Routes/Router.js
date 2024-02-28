@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express()
 
-const { saveAsset, getAllData , getId, updateRecord, deleteRecord,updateRecords, getMachines} = require('../controller/Controller'); // Assuming the controller file is named `Controller.js` and is in a directory called `controller`
+const { saveAsset, getAllData , getId, updateRecord, deleteRecord,updateRecords, getMachines, getLocationByAssetName} = require('../controller/Controller'); // Assuming the controller file is named `Controller.js` and is in a directory called `controller`
 // const {saveBreakDown, saveBreakdown }= require('../controller/BreakdownController');
 
 router.post('/saveAsset', saveAsset);
@@ -12,6 +12,7 @@ router.put('/updateRecord/:id',updateRecord);
 router.delete('/deleteRecord/:id',deleteRecord);
 router.put('/updateRecords',updateRecords);
 router.get('/getMachines/:AssetName', getMachines);
+router.get('/getLocationByAssetName/:AssetName', getLocationByAssetName)
 
 // router.post('/saveBreakDown', saveBreakdown);
 

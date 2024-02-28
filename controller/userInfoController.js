@@ -64,4 +64,57 @@ routerNo.delete('/UserInfo/:userId', async (req, res) => {
   }
 });
 
+// Find users by location
+routerNo.get('/UserInfoByLocation/:Location', async (req, res) => {
+  try {
+    const Location = req.params.Location;
+    const usersByLocation = await UserInfo.find({ Location });
+    
+    if (usersByLocation.length === 0) {
+      return res.status(404).json({ error: 'No users found in the specified location' });
+    }
+
+    res.json(usersByLocation);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching users by location' });
+  }
+});
+
+// getLocationByAssetName = async (req, res) => {
+  routerNo.get('/UserInfoByLocation', async (req, res) => {
+  try {
+    const users = await UserInfo.find({}, { Location: 1, name: 1, phoneNumber: 1, _id: 0 });
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ error: 'No location found' });
+    }
+
+    const assetNamesAndLocations = users.map(({ Location, name, phoneNumber }) => ({ Location, name, phoneNumber }));
+
+    res.status(200).json(assetNamesAndLocations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+routerNo.get('/UserInfoByLocation/:location', async (req, res) => {
+  try {
+    const locationParam = req.params.location;
+
+    const users = await UserInfo.find({ Location: locationParam }, { name: 1, phoneNumber: 1, _id: 0 });
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ error: 'No users found for the specified location' });
+    }
+
+    const usersInfo = users.map(({ name, phoneNumber }) => ({ name, phoneNumber }));
+
+    res.status(200).json(usersInfo);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = routerNo;

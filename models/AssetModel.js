@@ -4,6 +4,13 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema;
 // const now = new Date();
 
+const maintenanceSetSchema = new mongoose.Schema({
+    CMD: String,
+    TMD: String,
+    CMDFrequency: String,
+    TMDFrequency: String,
+  });
+
 const AssetSchema = new Schema({
   
     AssetName: {
@@ -15,7 +22,7 @@ const AssetSchema = new Schema({
         require: true
     },
     SrNo: {
-        type: Number,
+        type: String,
         require: true
     },
     MachineType: {
@@ -62,10 +69,30 @@ const AssetSchema = new Schema({
         type: String,
         require: true      
     },
-        status :{
+    status :{
             type:String,
             reruire: true
-        },
+    },
+    CMD :{
+            type:String,
+            // reruire: true
+    },
+    TMD :{
+            type:String,
+            // reruire: true
+    },
+    TMDFrequency :{
+        type:String,
+        // reruire: true
+},
+CMDFrequency :{
+    type:String,
+    // reruire: true
+},
+maintenanceData:{
+    type:String,
+},
+maintenanceData: [maintenanceSetSchema],
 
     },
 

@@ -1,4 +1,6 @@
 const Asset = require('../Model'); // Assuming the model file is named `Asset.js` and is in a directory called `models`
+const express = require('express');
+const router = express()
 
 const saveAsset = async (req, res) => {
     const {  AssetName, Description, AssetCategory, Location,
@@ -82,6 +84,35 @@ const getAllData = async (req, res) => {
   }
   };
 
+ const getLocationByAssetName = async (req, res) => {
+    try {
+      const AssetName = req.params.AssetName;
+      const asset = await Asset.findOne({ AssetName });
+  
+      if (!asset) {
+        return res.status(404).json({ error: `Asset with name '${AssetName}' not found` });
+      }
+  
+      const Location = asset.Location;
+      res.status(200).json({ AssetName, Location });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+
+  // Route to get all locations
+router.get('/locations', async (req, res) => {
+  try {
+    const locations = await Asset.find({ Location }); // Fetch all locations from the database
+    res.json(locations);
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
   // app.get('/asset/:id', async (req, res) => {
     const getId = async (req, res) => {
@@ -147,6 +178,27 @@ const updateRecords =  async (req, res) => {
   }
 };
 
+router.get('/getLocationById/:id', async (req, res) => {
+  try {
+    const assetId = req.params.id;
+
+    // Retrieve the asset from the database based on the provided ID
+    const asset = await Asset.findById(assetId);
+
+    if (!asset) {
+      // If the asset is not found, return an error response
+      return res.status(404).json({ error: 'Asset not found' });
+    }
+
+    // If the asset is found, return its location
+    res.status(200).json({ Location: asset.Location });
+  } catch (error) {
+    // Handle any errors that occur during the process
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = {
     saveAsset,
@@ -155,5 +207,6 @@ module.exports = {
     updateRecord,
     deleteRecord,
     updateRecords, 
-    getMachines
+    getMachines, 
+    getLocationByAssetName
 };

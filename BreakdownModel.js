@@ -9,6 +9,10 @@ const BreakDownSchema = new Schema({
         type:String,
         require: true
     },
+    Date: {
+        type: Date,
+        default: Date.now,
+    },
     BreakdownStartDate: {
         type: String,
         require: true
@@ -83,6 +87,10 @@ const BreakDownSchema = new Schema({
             require: true
         },
         Responsibility: {
+            type:String,
+            require: true
+        },
+        AttendedBy: {
             type:String,
             require: true
         },

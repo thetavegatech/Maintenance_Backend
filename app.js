@@ -30,7 +30,7 @@ const AssetRouter = require('./Routes/AssetRoute')
 const UserInfo = require('./models/userInfoModel');
 const routerNo = require('./controller/userInfoController');
 
-// const mongourl = "mongodb://192.168.29.93:27017/MMS_DB?directConnection=true"
+// const mongourl = "mongodb://localhost:27017/MMS_DB?directConnection=true" 
 const mongourl = "mongodb+srv://vaibhavdevkar101:Vaibhav123@cluster0.518nyqj.mongodb.net/MMS_DB?retryWrites=true&w=majority"
 
 
