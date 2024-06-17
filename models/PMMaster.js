@@ -12,7 +12,7 @@ const pmSchema = new Schema({
   },
   Location: {
     type: String,
-    // required: true,
+    
   },
   TaskName: {
     type: String,
