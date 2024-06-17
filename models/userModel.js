@@ -23,7 +23,15 @@ const userSchema = mongoose.Schema({
     mobileNO: {
         type: String,
         require: true
+    },
+    plant: {
+        type: String,
+        // require: true
     }
+    // plant: {
+    //     type: [String],
+    //     required: true
+    // }
 }, {
     timestamps: true
 });

@@ -8,7 +8,13 @@ const cookieparser = require("cookie-parser")
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const QRCode = require('qrcode');
 const Grid = require('gridfs-stream');
+const User = require("./models/userModel")
+const cbmRoutes = require('./Routes/cbmRoute');
+const tbmRoutes = require('./Routes/tbmRoute');
+const pmRoutes = require('./Routes/pmRoute');
+// const AssetMaster = require('./models/AssetModel')
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -20,18 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser())
 
 
-const router = require('./Routes/Router');
-const Breakdownrouter = require('./Routes/BreakdownRouter');
-const UserNo = require('./NumberModel');
-const Asset = require('./Model');
-const BreakDown = require('./BreakdownModel');
 const AssetMaster = require('./models/AssetModel');
-const AssetRouter = require('./Routes/AssetRoute')
-const UserInfo = require('./models/userInfoModel');
-const routerNo = require('./controller/userInfoController');
 
-// const mongourl = "mongodb://localhost:27017/MMS_DB?directConnection=true" 
-const mongourl = "mongodb+srv://vaibhavdevkar101:Vaibhav123@cluster0.518nyqj.mongodb.net/MMS_DB?retryWrites=true&w=majority"
+
+const mongourl = "mongodb://localhost:27017/MaintenX?directConnection=true" 
+// const mongourl = "mongodb+srv://vaibhavdevkar101:Vaibhav123@cluster0.518nyqj.mongodb.net/MMS_DB?retryWrites=true&w=majority"
 
 
 mongoose.connect(mongourl, {
@@ -44,17 +43,68 @@ mongoose.connect(mongourl, {
 const userRoute = require("./Routes/userRoutes")
 const {notFound , errorHandler} = require("./middleware/errorMiddleware")
 const AssetRoutes = require('./Routes/AssetRoute');
+const breakdownRoutes = require('./Routes/BreakdownRoute');
 
 
 app.use("/api/users", userRoute)
 
-//this routes for breakdown
-app.use(router);
-app.use(Breakdownrouter);
-// app.use(UserNo);
-app.use(routerNo);
-app.use(AssetRouter);
+
 app.use('/api', AssetRoutes);
+
+// Use CBM routes
+app.use('/api', cbmRoutes);
+app.use('/api', tbmRoutes);
+app.use('/api', pmRoutes);
+app.use('/api', breakdownRoutes);
+
+app.get('/getuser', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching users' });
+  }
+});
+
+// Get user by ID
+app.get('/getuser/:id', async (req, res) => {
+  try {
+    const users = await User.findById(req.params.id);
+    if (!users) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching user' });
+  }
+});
+
+
+// Delete user by ID
+app.delete('/getuser/:id', async (req, res) => {
+  try {
+    const users = await User.findByIdAndRemove(req.params.id);
+    if (!users) {
+      return res.status(404).json({ error: 'User not found to delete' });
+    }
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error deleting user' });
+  }
+});
+ // Update user by ID
+ app.put('/getuser/:id', async (req, res) => {
+  try {
+    const users = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!users) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error updating user' });
+  }
+});
+
 
 app.get('/getBreakdownData', async (req, res) => {
     try {
@@ -75,76 +125,66 @@ mongoose.connection.once('open', () => {
 });
 
 
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage });
 
-  
-
-// app.post('/upload', upload.single('image'), (req, res) => {
-//   // Access the uploaded file using req.file.buffer
-//   const { originalname, buffer } = req.file;
-
-//   // Create a write stream to store the file in MongoDB GridFS
-//   const writestream = gfs.createWriteStream({
-//     filename: originalname,
-//   });
-//   // Pipe the file buffer to GridFS
-//   writestream.write(buffer);
-//   writestream.end();
-
-//   writestream.on('close', () => {
-//     res.send('File uploaded successfully');
-//   });
-// });
-
-
-
-// app.post('/upload', upload.single('file'), (req, res) => {
-//   try {
-//     // Assuming 'file' is the name attribute of the file input in your HTML form
-//     const uploadedFile = req.file;
-
-//     if (!uploadedFile) {
-//       throw new Error('No file provided');
-//     }
-
-//     // Get the destination path (Multer has already configured the destination in your case)
-//     const destinationPath = uploadedFile.destination;
-
-//     // You can perform additional processing here if needed
-
-//     // Move the file to a desired location (e.g., the 'backend/uploads' folder)
-//     const newFilePath = path.join(destinationPath, uploadedFile.filename);
-//     fs.renameSync(uploadedFile.path, newFilePath);
-
-//     // Send a success response
-//     res.json({ message: 'File uploaded successfully!' });
-//   } catch (error) {
-//     console.error(error);
-
-//     // Send an error response
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
-
-// Multer configuration
+// Define storage for uploaded files
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'D:\Work\Bootstrap\images'); // Set the path to your source folder
+  destination: function (req, file, cb) {
+    cb(null, 'D:\Work\Bootstrap\images');
   },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
 
 const upload = multer({ storage: storage });
 
 // Route for file upload
-app.post('/upload', upload.single('image'), (req, res) => {
+// app.post('/upload', upload.single('image'), (req, res) => {
   // File uploaded successfully
-  res.send('File uploaded');
+  // res.send('File uploaded');
+// });
+
+// Example route for file upload
+app.post('/upload', upload.single('file'), (req, res) => {
+  // Access the uploaded file details using req.file
+  const filePath = req.file.path;
+  // Save filePath to your database or perform other actions
+
+  // Respond with success
+  res.json({ success: true, filePath });
 });
 
-app.listen(5000, () => {
-  console.log("Server is running on port 5000")
+
+
+app.get('/api/assetmaster/:AssetName', async (req, res) => {
+  try {
+    // Extract the asset name from request parameters
+    const assetName = req.params.AssetName;
+
+    // Find the asset in the database based on the asset name
+    const asset = await AssetMaster.findOne({ AssetName: assetName }, { Location: 1 });
+
+    // If asset is not found, return a 404 error response
+    if (!asset) {
+      return res.status(404).json({ error: `Asset with name '${assetName}' not found` });
+    }
+
+    // Extract the location from the asset
+    const location = asset.Location;
+
+    // Send a JSON response with asset name and location
+    res.status(200).json({ AssetName: assetName, Location: location });
+  } catch (error) {
+    // If any error occurs, log the error and return a 500 error response
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
+
+
+app.listen(4000, (req, res) => {
+  console.log("Server is running on port 4000")
 });

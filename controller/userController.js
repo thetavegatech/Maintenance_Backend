@@ -24,7 +24,8 @@ const authUser = asyncHandler(async (req, res) => {
             email: user.email,
             password: user.password,
             role: user.role,
-            mobileNO: user.mobileNO
+            mobileNO: user.mobileNO,
+            plant: user.plant
         })
     } else {
         res.status(400);
@@ -37,7 +38,7 @@ const authUser = asyncHandler(async (req, res) => {
 // route Post /api/users/auth
 // @access public 
 const registerUser = asyncHandler(async (req, res) => {   
-    const { name, email, password, role, mobileNO } = req.body;   
+    const { name, email, password, role, mobileNO, plant } = req.body;   
     const userExist = await User.findOne({email});
     if(userExist){
         res.status(400)
@@ -49,7 +50,8 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
          password, 
          role,
-          mobileNO
+          mobileNO,
+          plant
     })
 
     if (user) {
@@ -60,7 +62,8 @@ const registerUser = asyncHandler(async (req, res) => {
             email: user.email,
             password: user.password,
             role: user.role,
-            mobileNO: user.mobileNO
+            mobileNO: user.mobileNO,
+            plant: user.plant
         })
     } else {
         res.status(400);
@@ -92,7 +95,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
         name: req.user.name,
         email: req.user.email,
         role: req.user.role,
-        mobileNO: req.user.mobileNO
+        mobileNO: req.user.mobileNO,
+        plant: req.user.plant
     }
 
     res.status(200).json(user)
@@ -120,7 +124,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             name: updatedUser.name,
             email: updatedUser.email,
             role: updatedUser.role,
-            mobileNO: updatedUser.mobileNO
+            mobileNO: updatedUser.mobileNO,
+            plant: updatedUser.plant
         })
 
     } else {
@@ -129,8 +134,19 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }  
 });
 
+// const getAllUsers = asyncHandler(async (req, res) => {
+//     const users = await User.find({});
+//     res.json(users);
+//   });
 
-
+  const getAllUsers = asyncHandler(async (req, res) => {
+    try {
+      const users = await User.find();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching users' });
+    }
+  });
 
 
 module.exports = {
@@ -138,5 +154,6 @@ module.exports = {
     registerUser,
     logoutUser,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    getAllUsers
 };
